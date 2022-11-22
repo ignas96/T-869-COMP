@@ -3,8 +3,7 @@ import time
 import numpy as np
 
 
-def fps():
-    pass
+
 # define a video capture object
 vid = cv2.VideoCapture(0)
 
@@ -13,9 +12,14 @@ prev_frame_time = 0
 
 # used to record the time at which we processed current frame
 new_frame_time = 0
-radius = 41 #must be an odd number, or else GaussianBlur will fail
+
+radius = 41
 circleColor = (255, 0, 0)
 circleThickness = 2
+
+
+
+
 
 while(True):
     # Capture the video frame
@@ -43,15 +47,44 @@ while(True):
 
     
     ################  Bright spot part start
-
-    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
-    cv2.circle(frame, maxLoc, 1, circleColor, circleThickness)
+    # (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc()
+    # cv2.circle(frame, maxLoc, 1, circleColor, circleThickness)
     ################  Bright spot part end
+
+    ################  Red spot part start
+    # image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # lower = np.array([0, 150, 255])
+    # upper = np.array([ 15, 255, 255])
+    # mask = cv2.inRange(image, lower, upper)
+    # (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(image[:,:,1],mask=mask)
+
+    # cv2.circle(frame, maxLoc, 1, circleColor, circleThickness)
+
+    ################  Red spot part end
+
+    ################ For loop brightness method start 
+    max_value = 0
+    max_x_location=0
+    max_y_location=0
+
+    for x_axis in range(len(gray)):
+        for y_axis in range(len(gray[x_axis])):
+            if max_value < gray[x_axis][y_axis]:
+                max_value = gray[x_axis][y_axis]
+                max_x_location = x_axis
+                max_y_location = y_axis
+
+    cv2.circle(gray, (max_y_location,max_x_location), 1, (255, 0, 0), 2)
+    ################ For loop brightness method end
+
+    ################ For loop brightness method start 
+    ################ For loop brightness method end 
+
 
 
 
     # Display the resulting frame
-    cv2.imshow('frame', frame)
+    cv2.imshow('frame', gray)
     # the 'q' button is set as the
     # quitting button you may use any
     # desired button of your choice
