@@ -1,10 +1,64 @@
 import cv2
-import time
 import numpy as np
 
 def canny_edges(frame,threshold1,threshold2):
     edges = cv2.Canny(frame,threshold1,threshold2)
     cv2.imshow('Edges',edges)
+    edge_points = np.argwhere(edges != 0)
+    return edge_points
+
+def random_points(all_points):
+    if len(all_points) !=0 :
+        rand1 = np.random.randint(0, len(all_points)-1)
+        rand2 = np.random.randint(0, len(all_points)-1)
+        p1x = all_points[rand1][0]
+        p1y =all_points[rand1][1]
+        p2x = all_points[rand2][0]
+        p2y=all_points[rand2][1]
+        return (p1x,p1y), (p2x,p2y)
+    else:
+        return (0,0), (0,0)
+
+def line_equation(p1,p2):
+
+    # y = bx + c
+    b = (p2[1]-p1[1])/(p2[0]-p1[0]) # slope of line
+
+    # c = y - bx 
+    c = p2[1]- (b*p2[0]) # intersection of y axis
+
+    return b, -1, c
+
+def distance_from_line(p,A,B,C):
+    # print(p)
+    # print(A)
+    # print(B)
+    # print(C)
+    # d= abs(A*p[x]+B*p[y]+C)/((A^2+b^2)^(1/2))
+    d = abs(A * p[0] + B * p[1] + C) / np.sqrt((A**2 + B**2))
+    return d
+    
+
+
+def best_points(num_of_itterations, edge_points):
+    num_of_points = 0
+    best_p1 = (0, 0)
+    best_p2 = (0, 0)
+
+    for line in range(num_of_itterations):
+        p1, p2 = random_points(edge_points)
+        point_counter=0
+        A,B,C = line_equation(p1,p2)
+        for point in edge_points:
+            if distance_from_line(point,A,B,C) < 4:
+                point_counter+=1
+
+        if (point_counter > num_of_points):
+            num_of_points = point_counter
+            best_p1 = p1
+            best_p2 = p2
+    return best_p1, best_p2
+
 
 def quadrangle(image):
     hh, ww = image.shape[:2]
@@ -57,11 +111,17 @@ def main():
     while(1):
         ret, frame = vid.read()
 
-        #canny_edges(frame,100,200)
+        edge_points=canny_edges(frame,100,200)
+
+
         #image= cv2.imread("testfig.png")
-        corners = quadrangle(frame)
-        if corners == "To many corners":
-            continue
+        # corners = quadrangle(frame)
+        # if corners == "To many corners":
+        #     continue
+
+        p1,p2 = best_points(10,edge_points)
+        cv2.line(frame, p1,p2, (255, 0, 0), 2)
+        cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     #vid.release()
