@@ -36,6 +36,9 @@ def quadrangle(image):
     cv2.polylines(quad, [corners], True, (0,0,255), 2, cv2.LINE_AA)
     corners2 = np.float32([[0, 0],[0, 640],[400, 640], [400, 0]])
     corners = np.float32(corners[:,0,:])
+    if len(corners) != 4:
+        return "To many corners"
+
     # print(corners)
     # print(corners2)
 
@@ -56,8 +59,9 @@ def main():
 
         #canny_edges(frame,100,200)
         #image= cv2.imread("testfig.png")
-        quadrangle(frame)
-
+        corners = quadrangle(frame)
+        if corners == "To many corners":
+            continue
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     #vid.release()
