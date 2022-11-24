@@ -22,7 +22,9 @@ def random_points(all_points):
 def line_equation(p1,p2):
 
     # y = bx + c
-    b = (p2[1]-p1[1])/(p2[0]-p1[0]) # slope of line
+    b=0
+    if (p2[0]-p1[0]) != 0:
+        b = (p2[1]-p1[1])/(p2[0]-p1[0]) # slope of line
 
     # c = y - bx 
     c = p2[1]- (b*p2[0]) # intersection of y axis
@@ -38,8 +40,6 @@ def distance_from_line(p,A,B,C):
     d = abs(A * p[0] + B * p[1] + C) / np.sqrt((A**2 + B**2))
     return d
     
-
-
 def best_points(num_of_itterations, edge_points):
     num_of_points = 0
     best_p1 = (0, 0)
@@ -50,7 +50,7 @@ def best_points(num_of_itterations, edge_points):
         point_counter=0
         A,B,C = line_equation(p1,p2)
         for point in edge_points:
-            if distance_from_line(point,A,B,C) < 4:
+            if distance_from_line(point,A,B,C) < 2:
                 point_counter+=1
 
         if (point_counter > num_of_points):
@@ -58,7 +58,6 @@ def best_points(num_of_itterations, edge_points):
             best_p1 = p1
             best_p2 = p2
     return best_p1, best_p2
-
 
 def quadrangle(image):
     hh, ww = image.shape[:2]
@@ -106,11 +105,9 @@ def quadrangle(image):
     return corners
 
 
-
 def main():
     while(1):
         ret, frame = vid.read()
-
         edge_points=canny_edges(frame,100,200)
 
 
@@ -119,12 +116,16 @@ def main():
         # if corners == "To many corners":
         #     continue
 
-        p1,p2 = best_points(10,edge_points)
-        cv2.line(frame, p1,p2, (255, 0, 0), 2)
+        p1,p2 = best_points(50,edge_points)
+        revp1 = (p1[1],p1[0])
+        revp2 = (p2[1],p2[0])
+
+
+        cv2.line(frame, revp1,revp2, (255, 0, 0), 2)
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    #vid.release()
+    vid.release()
     cv2.destroyAllWindows()
 
 
