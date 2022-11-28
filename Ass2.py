@@ -66,7 +66,7 @@ def quadrangle(image):
 
     # threshold the grayscale image
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
-    #cv2.imshow("THRESH", thresh)
+    cv2.imshow("THRESH", thresh)
 
     # find outer contour
     cntrs = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -79,7 +79,7 @@ def quadrangle(image):
     # draw contour on copy of img as result
     contour = image.copy()
     cv2.drawContours(contour,[cntr], 0, (0,0,255), 2)
-
+    cv2.imshow("contour", contour)
     # limit contour to quadrilateral
     peri = cv2.arcLength(cntr, True)
     corners = cv2.approxPolyDP(cntr, 0.04 * peri, True)
@@ -116,8 +116,8 @@ def main():
         # cv2.imshow('frame', frame)
 
 
-        # image= cv2.imread("testfig.png")
-        quadrangle(frame)
+        image= cv2.imread("testfig.png")
+        quadrangle(image)
 
 
 
