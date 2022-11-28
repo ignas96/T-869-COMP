@@ -50,7 +50,7 @@ def best_points(num_of_itterations, edge_points):
         point_counter=0
         A,B,C = line_equation(p1,p2)
         for point in edge_points:
-            if distance_from_line(point,A,B,C) < 2:
+            if distance_from_line(point,A,B,C) < 1:
                 point_counter+=1
 
         if (point_counter > num_of_points):
@@ -90,7 +90,8 @@ def quadrangle(image):
     corners2 = np.float32([[0, 0],[0, 640],[400, 640], [400, 0]])
     corners = np.float32(corners[:,0,:])
     if len(corners) != 4:
-        return "To many corners"
+        # abort function if corners found are not 4
+        return None
 
     # print(corners)
     # print(corners2)
@@ -102,27 +103,24 @@ def quadrangle(image):
     #cv2.imshow("CONTOUR", contour)
     cv2.imshow('frame1', result)
     cv2.imshow("QUAD", quad)
-    return corners
 
 
 def main():
     while(1):
         ret, frame = vid.read()
-        edge_points=canny_edges(frame,100,200)
+        # edge_points=canny_edges(frame,100,200)
+        # p1,p2 = best_points(30,edge_points)
+        # revp1 = (p1[1],p1[0])
+        # revp2 = (p2[1],p2[0])
+        # cv2.line(frame, revp1,revp2, (255, 0, 0), 2)
+        # cv2.imshow('frame', frame)
 
 
-        #image= cv2.imread("testfig.png")
-        # corners = quadrangle(frame)
-        # if corners == "To many corners":
-        #     continue
-
-        p1,p2 = best_points(50,edge_points)
-        revp1 = (p1[1],p1[0])
-        revp2 = (p2[1],p2[0])
+        # image= cv2.imread("testfig.png")
+        quadrangle(frame)
 
 
-        cv2.line(frame, revp1,revp2, (255, 0, 0), 2)
-        cv2.imshow('frame', frame)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     vid.release()
